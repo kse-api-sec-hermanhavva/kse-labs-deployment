@@ -3,8 +3,6 @@ kind: Ingress
 metadata:
   name: session-cookie-demo
   namespace: applications
-  annotations:
-    cert-manager.io/cluster-issuer: vault-pki-int
 spec:
   ingressClassName: nginx
   tls:
