@@ -1,0 +1,9 @@
+apiVersion: v2
+name: keycloak-wrapper
+description: Keycloak IdP for API Security course labs
+version: 1.0.0
+appVersion: "26.3.3"
+dependencies:
+  - name: keycloak
+    version: 25.2.0
+    repository: https://charts.bitnami.com/bitnami

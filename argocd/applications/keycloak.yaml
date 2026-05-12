@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infra-keycloak
+  namespace: argocd
+spec:
+  project: infra
+  source:
+    repoURL: https://github.com/kse-bd8338bbe006/kse-labs-deployment.git
+    targetRevision: main
+    path: infra/keycloak
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: keycloak
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

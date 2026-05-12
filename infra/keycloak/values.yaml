@@ -1,0 +1,75 @@
+keycloak:
+  auth:
+    adminUser: admin
+    adminPassword: admin
+
+  production: false
+  proxyHeaders: xforwarded
+
+  # -- Disable the bundled PostgreSQL subchart; we use the external
+  #    instance on 192.168.50.10.
+  postgresql:
+    enabled: false
+
+  externalDatabase:
+    host: 192.168.50.10
+    port: 5432
+    database: keycloak
+    existingSecret: keycloak-db-credentials
+    existingSecretUserKey: db-user
+    existingSecretPasswordKey: db-password
+
+  ingress:
+    enabled: true
+    hostname: keycloak.192.168.50.10.nip.io
+    ingressClassName: nginx
+    pathType: Prefix
+
+  # -- Import the api-security realm on first deploy.
+  keycloakConfigCli:
+    enabled: true
+    configuration:
+      api-security-realm.json: |
+        {
+          "realm": "api-security",
+          "enabled": true,
+          "registrationAllowed": false,
+          "loginWithEmailAllowed": true,
+          "resetPasswordAllowed": true,
+          "bruteForceProtected": true,
+          "clients": [
+            {
+              "clientId": "spa-token-demo",
+              "enabled": true,
+              "publicClient": true,
+              "standardFlowEnabled": true,
+              "directAccessGrantsEnabled": true,
+              "rootUrl": "http://spa-token-demo.192.168.50.10.nip.io",
+              "redirectUris": [
+                "http://spa-token-demo.192.168.50.10.nip.io/*",
+                "http://localhost:3000/*"
+              ],
+              "webOrigins": [
+                "http://spa-token-demo.192.168.50.10.nip.io",
+                "http://localhost:3000"
+              ],
+              "protocol": "openid-connect"
+            }
+          ],
+          "users": [
+            {
+              "username": "student",
+              "enabled": true,
+              "email": "student@example.com",
+              "firstName": "Lab",
+              "lastName": "Student",
+              "credentials": [
+                {
+                  "type": "password",
+                  "value": "student",
+                  "temporary": false
+                }
+              ]
+            }
+          ]
+        }
