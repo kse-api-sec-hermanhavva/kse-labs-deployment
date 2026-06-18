@@ -49,12 +49,17 @@ spec:
                   key: password
             - name: KEYCLOAK_ISSUER_URI
               value: https://keycloak.192.168.50.10.nip.io/realms/api-security
+            - name: SPRING_APPLICATION_JSON
+              value: '{"app":{"internal-ca":"file:/etc/kse-pki/internal-ca.pem"}}'
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
             capabilities:
               drop: ["ALL"]
           volumeMounts:
+            - name: kse-pki
+              mountPath: /etc/kse-pki
+              readOnly: true
             - name: tmp
               mountPath: /tmp
           resources:
@@ -77,6 +82,9 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 5
       volumes:
+        - name: kse-pki
+          configMap:
+            name: kse-labs-ca
         - name: tmp
           emptyDir:
             medium: Memory
