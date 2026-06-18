@@ -32,8 +32,15 @@ spec:
             - name: script
               mountPath: /scripts
               readOnly: true
+            - name: bootstrap-root
+              mountPath: /bootstrap
+              readOnly: true
       volumes:
         - name: script
           configMap:
             name: vault-pki-init-script
             defaultMode: 0755
+        - name: bootstrap-root
+          secret:
+            secretName: vault-pki-root-ca
+            optional: true

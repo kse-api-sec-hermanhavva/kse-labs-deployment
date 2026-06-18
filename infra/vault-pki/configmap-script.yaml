@@ -16,15 +16,19 @@ data:
       exit 0
     fi
 
+    if [ ! -f /bootstrap/pem_bundle.pem ]; then
+      echo "missing bootstrap root CA bundle at /bootstrap/pem_bundle.pem" >&2
+      echo "create the vault/vault-pki-root-ca secret before bootstrapping PKI" >&2
+      exit 1
+    fi
+
     echo ">> enable pki (root CA), 10-year max TTL"
     vault secrets enable -path=pki pki
     vault secrets tune -max-lease-ttl=87600h pki
 
-    echo ">> generate root CA"
-    vault write -field=certificate pki/root/generate/internal \
-      common_name="kse-labs Root CA" \
-      issuer_name="kse-root" \
-      ttl=87600h > /tmp/root.crt
+    echo ">> import fixed root CA from bootstrap secret"
+    vault write pki/config/ca pem_bundle=@/bootstrap/pem_bundle.pem >/dev/null
+    vault read -field=certificate pki/cert/ca > /tmp/root.crt
 
     echo ">> set URLs on root"
     vault write pki/config/urls \
@@ -44,7 +48,6 @@ data:
 
     echo ">> sign intermediate with root"
     vault write -format=json pki/root/sign-intermediate \
-      issuer_ref="kse-root" \
       csr=@/tmp/intermediate.csr \
       format=pem_bundle \
       ttl="43800h" \
