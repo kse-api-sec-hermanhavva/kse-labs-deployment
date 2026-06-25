@@ -25,7 +25,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: spa-token-demo
-          image: ghcr.io/kse-api-sec-hermanhavva/spa-token-demo:0e894beb0cd96e23020b1b0c4c6ab8ffea02aeb0
+          image: ghcr.io/kse-api-sec-hermanhavva/spa-token-demo:50024531bcd9eb6167f7c1c6d338887c3e5ce38d
           ports:
             - name: http
               containerPort: 8080
